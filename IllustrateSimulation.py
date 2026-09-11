@@ -27,6 +27,7 @@ from Ownfunctions import *
 data = np.loadtxt('data.txt')
 y = data
 t, q = y.shape                      # t=obs, q=K
+print(t, q)
 K = q
 time = pd.date_range(start='1973-02', end='2008-01', freq='ME')  # Time line
 h = 15                               # Impulse response horizon
