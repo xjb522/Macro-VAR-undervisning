@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 print("succ")
 
-PATH = "/Users/nikolaizwisler/Documents/Universitet/Macro VAR undervisning/VARSWE-1.xls"
+PATH = "VARSWE-1.xls"
 
 
 # Opgave 1
@@ -32,9 +32,14 @@ df = df.drop(columns=["Dates"])  # we re-create a clean Dates at the end
 
 # GDP in logs
 
-df.dtypes()
+print(df.dtypes)
+
+df = pd.to_numeric(df["GDP"])
 
 GDP_log = np.log(df["GDP"])
+
+print(df.columns)
+print(df.head())
 
 # This is the canadian domestic int. rate (this is the 'r' column in the new file)
 IntRate = df["Domestic interest rate"]
