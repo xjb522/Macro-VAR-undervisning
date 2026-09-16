@@ -141,7 +141,7 @@ epsilon = np.random.multivariate_normal([0, 0], sigma, N).T
 
 # Generate the VAR(2) process
 for t in range(1, N):
-    y2[:, t] = alpha + rho1 @ y2[:, t-1] + rho2 @ y2[:, t-1]  + epsilon[:, t]
+    y2[:, t] = alpha + rho1 @ y2[:, t-1] + rho2 @ y2[:, t-2]  + epsilon[:, t]
 
 y2 = y2.T
 DR ,DE = pfind(y=y2,pmax=12)
@@ -151,10 +151,23 @@ print(DE)
 
 
 plt.clf()
-plt.plot(y2[:,1])
+plt.plot(y2)
 plt.grid()
 plt.title("y2")
 
 
-## 
+
+plt.close("all")
+plt.figure()
+plt.plot(y2[:, 0], label="y1")
+plt.plot(y2[:, 1], label="y2")
+
+plt.axhline(0, linewidth=1)
+plt.xlabel("Tid")
+plt.ylabel("Værdi")
+plt.title("Simuleret VAR(2)")
+plt.legend()
+plt.grid()
+
+plt.show() 
 
