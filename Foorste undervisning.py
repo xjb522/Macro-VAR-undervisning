@@ -1,3 +1,4 @@
+from pandas import errors
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -32,6 +33,8 @@ df = df.drop(columns=["Dates"])  # we re-create a clean Dates at the end
 
 # GDP in logs
 
+df = df.apply(pd.to_numeric, errors="coerce")
+
 print(df.dtypes)
 
 df = pd.to_numeric(df["GDP"])
@@ -51,7 +54,7 @@ FedFunds = df["Federal Funds rate"]
 # CPI inflation:
 # We want year on year inflammation, and thus, we take the 4-shift=1 year.
 #multiply to get in percentages
-Infl_yoy = df["Annual inflation rate"].pct_change()
+Infl_yoy = df["Annual inflation rate"].pct_change(4)
 Infl = Infl_yoy.rename("Infl")
 
 # We calc the exchange rate change as a quarter-over-quarter log change from RERinv variable
@@ -68,8 +71,10 @@ result = result.dropna()  # drop first few rows lost to differences.
 result = result.reset_index().rename(columns={"Quarter": "Dates"})
 result["Dates"] = result["Dates"].dt.to_timestamp(how="start")
 
+
+
 # Reorder as you wish
-df = result[["Dates", "FedFunds", "GDP", "Infl", "IntRate", "ExchangeRate"]]
+df = result["Dates", "FedFunds", "GDP", "Infl", "IntRate", "ExchangeRate"]
 
 #For cleaning
 del ExchangeRate, GDP_log, Infl, Infl_yoy, IntRate, PATH, result, FedFunds
@@ -77,3 +82,22 @@ del ExchangeRate, GDP_log, Infl, Infl_yoy, IntRate, PATH, result, FedFunds
 #Show the data
 df
 
+#Lets inspect the data!
+df.describe()
+
+
+## opgave 2
+
+df =df.reset_index()
+df = df.drop(columns="index")
+print(df.head())
+df = df.drop(columns="Quarter")
+
+
+df["GDP"] = np.log(df["GDP"])
+
+
+plt.clf()
+
+plt.figure(figsize=(12,5))
+plt.plot(result)
