@@ -29,7 +29,7 @@ from statsmodels.stats.diagnostic import (
     het_arch,
 )
 from statsmodels.stats.stattools import jarque_bera
-from statsmodels.tools.decorators import cache_readonly, deprecated_alias
+#from statsmodels.tools.decorators import cache_readonly, deprecated_alias
 from statsmodels.tools.linalg import logdet_symm
 from statsmodels.tools.sm_exceptions import OutputWarning
 from statsmodels.tools.validation import array_like
@@ -1612,6 +1612,30 @@ def multnorm(umat):
 # Question 6 of Homework Assignment 1 asks you to code them yourself, so they
 # are not provided here. Write your own and keep them in your own file - you
 # will need them again in the exercise classes.
+
+def comp(Beta, p):
+
+    # Antal endogene variable
+    A = Beta.shape[1]
+
+    # Companion matrix
+    K = np.zeros((A*p, A*p))
+
+    # VAR-koefficienter
+    K[:A, :] = Beta[:A*p, :].T
+
+    # Identity matrix under første blok
+    if p > 1:
+        K[A:, :-A] = np.eye(A * (p - 1))
+
+    return A, K
+
+def stabVAR(A):
+
+    eigenvalues = np.linalg.eigvals(A)
+
+    return eigenvalues
+
 
 
 def PhillipsNorm(K,p,T,model,r,beta,S00,S10,S01,S11,Gammasum):
