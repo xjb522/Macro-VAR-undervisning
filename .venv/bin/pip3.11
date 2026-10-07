@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/nikolaizwisler/Documents/Universitet/Macro VAR undervisning/.venv/bin/python3.11" "$0" "$@"
+'''exec' "/Users/nikolaizwisler/Documents/Universitet/Macro VAR undervisning/.venv/bin/python" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
