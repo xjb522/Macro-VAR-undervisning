@@ -55,6 +55,28 @@ from statsmodels.tsa.vector_ar.hypothesis_test_results import (
 from statsmodels.tsa.vector_ar.irf import IRAnalysis
 from statsmodels.tsa.vector_ar.output import VARSummary
 
+
+def companion(Beta, p):
+    # antal endogene variable
+    K = Beta.shape[1]
+
+    # companion matrix: (K*p) x (K*p)
+    F = np.zeros((K*p, K*p))
+
+    # øverste blok: A1, A2, ..., Ap
+    # antager at de første K*p rækker i Beta er lag-koefficienterne
+    F[:K, :] = Beta[:K*p, :].T
+
+    # identitetsmatricer under øverste blok
+    if p > 1:
+        F[K:, :-K] = np.eye(K*(p-1))
+
+    return F
+
+
+
+
+
 def lagmatrix(data, lags):
     T, K = data.shape
     lagged_data = np.zeros((T, K * lags))
