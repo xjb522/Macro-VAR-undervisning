@@ -20,10 +20,16 @@ Data_punkter = {"GDP":Data["GDP"], "Annual inflation rate":Data["Annual inflatio
 
 data_navne = Data_punkter.keys()
 
+print(Data)
+
+Data_punkter["GDP_log"] = np.log(Data_punkter["GDP"])
+
+Data_punkter["REER_log_diff"] = np.log(Data_punkter["Real effective exchange rate"]).diff(1)
+
 plt.close()
 plt.clf()
 
-fig, ax = plt.subplots(4, 2, figsize=(12, 8))
+fig, ax = plt.subplots(3, 2, figsize=(12, 8))
 
 ax = ax.flatten()
 
@@ -35,12 +41,19 @@ y_labels = {
     "Oil price": "Price",
     "Real effective exchange rate": "Exchange rate",
     "Foreign interest rate": "Percent (%)",
-    "Federal Funds rate": "Percent (%)"
+    "Federal Funds rate": "Percent (%)",
+    "GDP_log": "log values",
+    "REER_log_diff": "log Diff"
 }
 
+data_navne_Question_1 = Data_punkter.copy()
 
 
-for i, navn in enumerate(data_navne):
+for i in ["GDP","CPI seasonal adjusted","Oil price", "Real effective exchange rate", "Federal Funds rate"]:
+    data_navne_Question_1.pop(i, None)
+
+
+for i, navn in enumerate(data_navne_Question_1):
     ax[i].plot(
         Data_punkter[navn],
         label=navn
@@ -55,3 +68,6 @@ for i, navn in enumerate(data_navne):
 plt.tight_layout()
 plt.show()
 
+data_navne_question_1 = data_navne_Question_1.keys()
+for i in data_navne_question_1:
+    print(Data_punkter[i].describe())
