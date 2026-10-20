@@ -182,15 +182,26 @@ def top_down(y, pmax):
 
     return table_lr
 
-Top_down = top_down(y, pmax=6)
 
-LagInformationValue, OptimalLag = pfind(y,6)   
+
+y = pd.DataFrame(y)
+
+y = y.dropna()
+
+y = np.array(y)
+
+print(y.dtypes)
 
 top_down(y, pmax=12)
+
+Top_down = top_down(y, pmax=12)
+
+LagInformationValue, OptimalLag = pfind(y,12)   
 
 print(OptimalLag)
 print("----------------------")
 print(LagInformationValue)
 print(Top_down)
 
+# Opgave 4
 
