@@ -28,7 +28,7 @@ print(Data.dtypes)
 for i in Data.columns:
     pd.to_numeric(Data[i])
 
-Data_punkter = {"GDP":Data["GDP"], "Annual inflation rate":Data["Annual inflation rate"], "CPI seasonal adjusted":Data["CPI seasonal adjusted"],"Domestic interest rate":Data["Domestic interest rate"], "Oil price":Data["Oil price"],"Real effective exchange rate":Data["Real effective exchange rate"],"Foreign interest rate": Data["Foreign interest rate"],"Federal Funds rate": Data["Federal Funds rate"]}
+Data_punkter = {"GDP":Data["GDP"], "Annual inflation rate":Data["Annual inflation rate"], "CPI seasonal adjusted":Data["CPI seasonal adjusted"],"Domestic interest rate":Data["Domestic interest rate"], "Oil price":Data["Oil price"],"Real effective exchange rate":Data["Real effective exchange rate"],"Foreign interest rate": Data["Foreign interest rate"],"Federal Funds rate": Data["Federal Funds rate"], "Dummies": Data["Dummy.4"]}
 
 data_navne = Data_punkter.keys()
 
@@ -55,7 +55,8 @@ y_labels = {
     "Foreign interest rate": "Percent (%)",
     "Federal Funds rate": "Percent (%)",
     "GDP_log": "log values",
-    "REER_log_diff": "log Diff"
+    "REER_log_diff": "log Diff",
+    "Dummies": "dum"
 }
 
 data_navne_Question_1 = Data_punkter.copy()
@@ -621,3 +622,7 @@ for col in dummy_cols:
 
 
 result = jcitestexog(y, p - 1, 0, 3)
+
+
+# now we will include dummies to see if it fixes the problem.
+
