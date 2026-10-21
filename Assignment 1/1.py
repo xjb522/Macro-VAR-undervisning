@@ -93,6 +93,37 @@ y = {}
 for i in data_navne_question_1:
     y[i] = data_navne_Question_1[i]
 
+y = pd.DataFrame(y)
+
+
+## Data klargøring
+# Five endogenous variables
+var_cols = [
+    "Annual inflation rate",
+    "Domestic interest rate",
+    "Foreign interest rate",
+    "GDP_log",
+    "REER_log_diff"
+]
+
+# Bjørnland's three impulse dummies
+dummy_cols = [
+    "Dummy.2",  # 1992Q3
+    "Dummy",    # 1993Q1
+    "Dummy.1"   # 1995Q4
+]
+
+# Combine endogenous variables and exogenous dummies
+
+exog = Data[dummy_cols].to_numpy(dtype=float)
+exog = np.array(exog)
+exog = np.delete(exog, 0,0)
+
+
+print("Endogenous variables:", y.shape)
+print("Exogenous variables:", exog.shape)
+
+
 y = pd.DataFrame(y).to_numpy()
 
 T, K = y.shape
@@ -196,22 +227,20 @@ def top_down(y, pmax):
 
 y = pd.DataFrame(y)
 
-y = y.dropna()
 
-y = np.array(y)
+y = pd.DataFrame(y).dropna().to_numpy()
 
-print(y.dtype)
 
-top_down(y, pmax=12)
+Top_down = top_down(y, pmax=6)
 
-Top_down = top_down(y, pmax=12)
-
-LagInformationValue, OptimalLag = pfind(y,12)   
+LagInformationValue, OptimalLag = pfind(y,6)   
 
 print(OptimalLag)
 print("----------------------")
 print(LagInformationValue)
 print(Top_down)
+
+
 
 # Opgave 4
 
@@ -245,7 +274,44 @@ def Var_OLS(y_m, lags):
 
     return B, U, SIGMA, XMAX, Y
 
-B, U, SIGMA, X, Y = Var_OLS(y, lags=3)
+def Var_OLS_exog(y, p, exog=None):
+    t, K = y.shape
+
+    # Constant and lagged endogenous variables
+    X = np.ones((1, t-p))
+
+    for i in range(1, p+1):
+        X = np.vstack([
+            X,
+            y[p-i:t-i, :].T
+        ])
+
+    # Add contemporaneous exogenous variables
+    if exog is not None:
+        exog = np.asarray(exog)
+        assert exog.shape[0] == t
+
+        X = np.vstack([
+            X,
+            exog[p:, :].T
+        ])
+
+    Y = y[p:, :].T
+
+    # OLS coefficients
+    B = Y @ X.T @ np.linalg.inv(X @ X.T)
+
+    # Residuals
+    U = Y - B @ X
+
+    # Residual covariance matrix
+    Sigma = U @ U.T / (t-p)
+
+    return B, U, Sigma, X, Y
+
+
+
+B, U, SIGMA, X, Y = Var_OLS_exog(y, p=3, exog=exog)
 
 print("B:", B.shape)
 print("U:", U.shape)
@@ -348,7 +414,7 @@ h = 4
 arch_lags = 2
 
 # Estimate selected VAR model
-B, U, SIGMA, X, Y = Var_OLS(y, lags=p)
+B, U, SIGMA, X, Y = Var_OLS_exog(y, p=p, exog=exog)
 
 # Your function returns residuals as K x T.
 # Diagnostic functions expect T x K.
@@ -514,7 +580,7 @@ def VAR_stability(F):
 p = 3
 T, K = y.shape
 
-B, U, SIGMA, X, Y = Var_OLS(y, lags=p)
+B, U, SIGMA, X, Y = Var_OLS_exog(y, p=p, exog=exog)
 
 # Construct companion matrix
 F = comp_M(B, K, p)
@@ -561,6 +627,7 @@ ax.grid(True)
 ax.legend(loc="upper right")
 
 plt.show()
+
 
 #Opgave 7
 
