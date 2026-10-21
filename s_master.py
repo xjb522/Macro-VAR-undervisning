@@ -1097,7 +1097,14 @@ def jcitestexog(data,p,exog,model):
     diagres = np.zeros([1,6])
     # =============================================================================
     for j in range(0, K):
-              data = [[ j , np.round(float(lr1[j]), 3), np.round(cval5[j], 3), np.round(cval10[j], 4), np.round(pval[j,0], 4), np.round(l[j], 4)]]
+              data = [[
+                        j,
+                        np.round(np.asarray(lr1).ravel()[j], 3),
+                        np.round(np.asarray(cval5).ravel()[j], 3),
+                        np.round(np.asarray(cval10).ravel()[j], 4),
+                        np.round(np.asarray(pval).ravel()[j], 4),
+                        np.round(np.asarray(l).ravel()[j], 4)
+                    ]]
               #data = np.ones([1,5])
               diagres = np.concatenate((diagres,data), axis=0)
    
@@ -1539,7 +1546,7 @@ def multnorm(umat):
     n, k = umat.shape
     umat = umat - np.mean(umat, axis=0)
     Su = (1 / n) * (umat.T @ umat)
-    lambda_, Pmat = np.linalg.eig(Su)
+    lambda_, Pmat = np.linalg.eigh(Su)
     lambda_diag = np.diag(lambda_)
 
     x = np.sqrt(np.diag(Pmat.T @ Pmat))
@@ -1549,7 +1556,7 @@ def multnorm(umat):
         Pmat[:, i] = Pmat[:, i] / x[i]
 
     sqrt_lambda = np.sqrt(lambda_diag)
-    Q = Pmat @ sqrt_lambda @ Pmat.T
+    Q = Pmat @ np.diag(np.sqrt(lambda_)) @ Pmat.T
 
     v1 = np.linalg.inv(Q) @ umat.T
     L = np.linalg.cholesky(Su).T
