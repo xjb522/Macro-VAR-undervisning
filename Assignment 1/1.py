@@ -28,7 +28,7 @@ print(Data.dtypes)
 for i in Data.columns:
     pd.to_numeric(Data[i])
 
-Data_punkter = {"GDP":Data["GDP"], "Annual inflation rate":Data["Annual inflation rate"], "CPI seasonal adjusted":Data["CPI seasonal adjusted"],"Domestic interest rate":Data["Domestic interest rate"], "Oil price":Data["Oil price"],"Real effective exchange rate":Data["Real effective exchange rate"],"Foreign interest rate": Data["Foreign interest rate"],"Federal Funds rate": Data["Federal Funds rate"], "Dummies": Data["Dummy.4"]}
+Data_punkter = {"GDP":Data["GDP"], "Annual inflation rate":Data["Annual inflation rate"], "CPI seasonal adjusted":Data["CPI seasonal adjusted"],"Domestic interest rate":Data["Domestic interest rate"], "Oil price":Data["Oil price"],"Real effective exchange rate":Data["Real effective exchange rate"],"Foreign interest rate": Data["Foreign interest rate"],"Federal Funds rate": Data["Federal Funds rate"]}
 
 data_navne = Data_punkter.keys()
 
@@ -36,7 +36,7 @@ print(Data)
 
 Data_punkter["GDP_log"] = np.log(Data_punkter["GDP"])
 
-Data_punkter["REER_log_diff"] = np.log(Data_punkter["Real effective exchange rate"]).diff(1)
+Data_punkter["REER_log_diff"] = (np.log(Data_punkter["Real effective exchange rate"]).diff(1))
 
 plt.close()
 plt.clf()
@@ -530,7 +530,6 @@ print("Is VAR stable?", stable)
 theta = np.linspace(0, 2*np.pi, 500)
 
 
-plt.clf()
 
 fig, ax = plt.subplots(figsize=(6, 6))
 
