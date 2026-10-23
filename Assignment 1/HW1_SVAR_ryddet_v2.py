@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2, f, jarque_bera
 from statsmodels.stats.diagnostic import acorr_ljungbox, het_arch
-from s_master import march, multnorm, jcitestexog
+from s_master import march, multnorm, jcitestexog, johcontest
 
 DATA_PATH = Path("Assignment 1/VARSWE.xls")
 P_MAX = 6                # Maximum lag order for model selection
@@ -516,3 +516,169 @@ for model, name in models.items():
     print("Cointegration rank:", johansen_q8[model]["rank"])
     print("Restricted constants:", johansen_q8[model]["c0"])
     print("Restricted trends:", johansen_q8[model]["d0"])
+
+
+
+# %% Question 9
+from Own_functions import johcontest_py 
+
+
+P = 3
+r = 3.0
+model = "H*"
+test = ["bcon"]
+
+# Restrict linear trend coefficients to zero
+cons = np.zeros((y.shape[1] + 1, 1))
+cons[-1, 0] = 1.0
+
+LR, pvalue, dof, restricted, unrestricted = johcontest_py(
+    Y=y,
+    r=r,
+    test=test,
+    cons=cons,
+    model=model,
+    lags=P - 1,
+    alpha=0.05
+)
+
+
+# %% Question 10: Johansen restriction tests
+
+from Own_functions import question10_tests
+
+# Selected specification from Question 9
+P = 3
+r = 3
+alpha_level = 0.05
+
+# Perform all 15 LR restriction tests
+q10_results = question10_tests(
+    y=y,
+    p=P,
+    r=r,
+    names=VAR_COLS,
+    significance=alpha_level
+)
+
+# Display tables
+for test_name, table in q10_results.items():
+    print(f"\n{'=' * 50}")
+    print(test_name)
+    print(table.round(4).to_string(index=False))
+
+# Access individual results
+stationarity = q10_results["Stationarity"]
+exclusion = q10_results["Exclusion"]
+weak_exogeneity = q10_results["Weak exogeneity"]
+
+
+# %% Question 11: PPP and UIP restrictions
+
+from Own_functions import (
+    question11_tests,
+    plot_question11_relations
+)
+
+VARIABLES = [
+    "Annual inflation rate",
+    "Domestic interest rate",
+    "Foreign interest rate",
+    "GDP_log",
+    "REER_log_diff",
+]
+
+
+# Preferred model from questions 9-10
+P = 3
+r = 3
+
+# LR tests of theoretical vectors
+q11_results, q11_vectors = question11_tests(
+    y=y,
+    p=P,
+    r=r,
+    exchange_rate_rises_for_depreciation=True
+)
+
+print("\nQuestion 11: PPP and UIP restrictions")
+print(q11_results.round(4).to_string(index=False))
+
+# Plot theoretical relations using aligned dates
+fig, axes = plot_question11_relations(
+    y=y,
+    dates=model_df.index,
+    vectors=q11_vectors,
+    path="q11_ppp_uip.png"
+)
+
+plt.show()
+
+
+
+
+# %% Question 11: Robustness to dummy variables
+
+from Own_functions import (
+    compare_dummy_specifications, fixed_vector_lr,
+    DUMMY_3,
+    DUMMY_7
+)
+
+# Match dummy observations to the dates used in y
+dummy3 = data.loc[
+    model_df.index, DUMMY_3
+].to_numpy(dtype=float)
+
+dummy7 = data.loc[
+    model_df.index, DUMMY_7
+].to_numpy(dtype=float)
+
+assert len(y) == len(dummy3) == len(dummy7)
+
+# Compare PPP and UIP restrictions
+comparison = compare_dummy_specifications(
+    y=y,
+    dummy3=dummy3,
+    dummy7=dummy7,
+    p=3,
+    r=3
+)
+
+print(comparison.round(4).to_string(index=False))
+
+
+
+# %% Question 11: Bootstrap robustness
+
+bootstrap_results = compare_dummy_specifications(
+    y=y,
+    dummy3=dummy3,
+    dummy7=dummy7,
+    p=3,
+    r=3,
+    run_bootstrap=True,
+    bootstrap_reps=999,
+    seed=2026
+)
+
+print(bootstrap_results.round(4).to_string(index=False))
+
+b_ppp = np.array([0, 0, 0, 0, 1.0])
+b_uip = np.array([0, 1, -1, 0, -400.0])
+
+for name, b in {
+    "PPP proxy": b_ppp,
+    "UIP proxy": b_uip
+}.items():
+
+    result = fixed_vector_lr(
+        y=y,
+        b=b,
+        p=3,
+        r=2,
+        exog=dummy7
+    )
+
+    print(name, result)
+

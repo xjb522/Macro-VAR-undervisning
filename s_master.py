@@ -1,5 +1,26 @@
 #masterfile
 #revised by eske on sep 23
+#%%
+import sys
+
+print("Python version:", sys.version)
+print("Python path:", sys.executable)
+
+try:
+    import matlab
+    import matlab.engine
+
+    print("MATLAB Engine import: OK")
+    print("matlab.double:", matlab.double([[1.0, 2.0]]))
+
+except Exception as e:
+    print("MATLAB Engine error:", type(e).__name__)
+    print(e)
+
+
+
+#%%
+
 
 
 #packages
@@ -7,7 +28,7 @@ import math
 import sys
 import numpy as np
 import pandas as pd
-#import matlab.engine
+import matlab.engine
 
 from numpy.linalg import *
 from scipy.linalg import sqrtm
