@@ -1075,7 +1075,7 @@ def jcitestexog(data,p,exog,model):
     diagres = np.zeros([1,6])
     # =============================================================================
     for j in range(0, K):
-              data = [[ j , np.round(float(lr1[j]), 3), np.round(cval5[j], 3), np.round(cval10[j], 4), np.round(pval[j,0], 4), np.round(l[j], 4)]]
+              data = [[ j , np.round(float(lr1[j,0]), 3), np.round(cval5[j], 3), np.round(cval10[j], 4), np.round(pval[j,0], 4), np.round(l[j], 4)]]
               #data = np.ones([1,5])
               diagres = np.concatenate((diagres,data), axis=0)
    
